@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Category, CustomerType, Expense } from '../utils/expenses'
-import { CATEGORIES, CUSTOMER_TYPES } from '../utils/expenses'
+import { CATEGORIES, CUSTOMER_TYPES, validateExpense } from '../utils/expenses'
 
 interface Props {
   onAdd: (e: Omit<Expense, 'id'>) => void
@@ -19,7 +19,7 @@ export default function ExpenseForm({ onAdd }: Props) {
   function submit(e: React.FormEvent) {
     e.preventDefault()
     const amount = parseFloat(form.amount)
-    if (!form.description.trim() || isNaN(amount) || amount <= 0) return
+    if (validateExpense(form.description, amount) !== null) return
     onAdd({ description: form.description.trim(), amount, category: form.category, customerType: form.customerType })
     setForm(emptyForm)
   }

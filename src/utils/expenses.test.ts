@@ -4,6 +4,7 @@ import {
   applyDiscount,
   totalAfterDiscount,
   totalByCategory,
+  validateExpense,
   type Expense,
 } from './expenses'
 
@@ -55,5 +56,20 @@ describe('totalByCategory', () => {
     expect(totals.Transport).toBe(50)
     expect(totals.Study).toBe(80)
     expect(totals.Other).toBe(0)
+  })
+})
+describe('validateExpense', () => {
+  it('accepts valid input', () => {
+    expect(validateExpense('Lunch', 10)).toBeNull()
+  })
+  it('rejects empty or whitespace description', () => {
+    expect(validateExpense('   ', 10)).not.toBeNull()
+  })
+  it('rejects NaN amount', () => {
+    expect(validateExpense('Lunch', NaN)).not.toBeNull()
+  })
+  it('rejects zero and negative amounts', () => {
+    expect(validateExpense('Lunch', 0)).not.toBeNull()
+    expect(validateExpense('Lunch', -5)).not.toBeNull()
   })
 })

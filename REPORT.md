@@ -1,0 +1,4 @@
+| 3 | The vulnerable packages are dev-only, not in the production bundle | `npm audit --omit=dev` → "found 0 vulnerabilities" | Fact |
+| 5 | Validation exists only in the UI (ExpenseForm.tsx, submit()); the logic functions in expenses.ts accept negative/NaN amounts | ExpenseForm.tsx submit(); no checks in expenses.ts | Fact |
+| 10 | Invalid input is rejected silently: submit() just returns, no error message is shown to the user | ExpenseForm.tsx, submit() | Fact (by code reading; not yet tried in browser) |
+| 11 | Validation rule is inside the React component (mixed UI/business logic) and is not unit-tested | ExpenseForm.tsx; expenses.test.ts has no validation tests | Fact |

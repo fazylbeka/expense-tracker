@@ -50,3 +50,10 @@ export function totalByCategoryAfterDiscount(expenses: Expense[]): Record<Catego
   }
   return result
 }
+
+export function validateExpense(description: string, amount: number): string | null {
+  if (!description.trim()) return 'Description is required'
+  if (Number.isNaN(amount)) return 'Amount must be a number'
+  if (amount <= 0) return 'Amount must be greater than 0'
+  return null
+}
