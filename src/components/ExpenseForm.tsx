@@ -15,11 +15,18 @@ const emptyForm = {
 
 export default function ExpenseForm({ onAdd }: Props) {
   const [form, setForm] = useState(emptyForm)
+  const [error, setError] = useState<string | null>(null)
 
+  
   function submit(e: React.FormEvent) {
     e.preventDefault()
     const amount = parseFloat(form.amount)
-    if (validateExpense(form.description, amount) !== null) return
+    const validationError = validateExpense(form.description, amount)
+    if (validationError !== null) {
+      setError(validationError)
+      return
+    }
+    setError(null)
     onAdd({ description: form.description.trim(), amount, category: form.category, customerType: form.customerType })
     setForm(emptyForm)
   }
@@ -75,6 +82,9 @@ export default function ExpenseForm({ onAdd }: Props) {
           </select>
         </label>
       </div>
+      {error && (
+        <p role="alert" className="text-sm text-rose-600">{error}</p>
+      )}
       <button
         type="submit"
         className="w-full rounded-md bg-slate-800 px-4 py-2 text-white font-medium transition-colors hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"

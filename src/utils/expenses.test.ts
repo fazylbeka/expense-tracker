@@ -73,6 +73,14 @@ describe('validateExpense', () => {
     expect(validateExpense('Lunch', -5)).not.toBeNull()
   })
 })
+
+describe('validateExpense messages (R1)', () => {
+  it('returns a specific message for each failure', () => {
+    expect(validateExpense('  ', 5)).toBe('Description is required')
+    expect(validateExpense('x', NaN)).toBe('Amount must be a number')
+    expect(validateExpense('x', -1)).toBe('Amount must be greater than 0')
+  })
+})
 describe('rounding (R5)', () => {
   it('rounds the discounted amount to cents', () => {
     expect(applyDiscount(0.02, 'student')).toBe(0.02)
