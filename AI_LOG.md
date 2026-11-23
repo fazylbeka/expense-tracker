@@ -19,5 +19,31 @@
 - **Verification:** `npm test` (13 passed), `npm run lint`, `npm run build`, `git diff baseline --stat`.
 - **Note:** AGENTS.md is not loaded automatically by the chat; its text is pasted manually where used.
 
-## Entry 3: Read-only risk review (Task 4)
-TODO (tool/model, exact prompt, raw output, what I verified)
+## Entry 3: GitHub Copilot Chat, read-only risk review (Task 4), 23 Nov 2026
+- **Tool:** GitHub Copilot Chat in VS Code, **Ask** mode (no file edits allowed).
+- **Model:** <WRITE THE MODEL NAME SHOWN IN THE COPILOT MODEL PICKER>
+- **Context received:** new chat; AGENTS.md, `expenses.ts`, `ExpenseForm.tsx`, `package.json` attached by me. AGENTS.md was attached manually as context (I cannot verify whether this VS Code version loads it automatically).
+  Copilot also opened on its own: `App.tsx`, `ExpenseTable.tsx`, `Summary.tsx`, `expenses.test.ts`, `vite.config.ts`, `vitest.config.ts`, `tsconfig.app.json`, `eslint.config.js`, `README.md`, `REPORT.md`, `AI_LOG.md`.
+- **Prompt:** "You are doing a READ-ONLY risk review of a small React + TypeScript + Vite expense tracker. Do not modify, create or delete any files and do not propose running destructive commands. Follow the AGENTS.md rules in the attached file. Propose at least 8 candidate risks. For each give: category (correctness / maintainability / security / dependency / agent operations), cause -> event -> consequence, affected file or function, and a command or test I could run to verify it. Mark which ones you are unsure about."
+- **Output:** 11 candidate risks (raw text in Appendix A). Copilot stated that no files were changed and no commands were executed. `git status` after the review: <PASTE OUTPUT, should show a clean tree>
+- **Limitations of this review:**
+  - Copilot read my own REPORT.md and AI_LOG.md, so risks 10 and 11 were taken from my documents and are not independent findings.
+  - Nothing was executed by Copilot; all items are hypotheses until I verified them.
+  - No security-category finding was proposed; I added an XSS check myself.
+- **Problems found in Copilot's output (my assessment):**
+  - Risk 11 ("AGENTS.md not loaded automatically") generalises a note about the claude.ai chat. Copilot itself opened AGENTS.md with a read tool, so for Copilot the claim is inaccurate. Classified as plausible/weak, not confirmed.
+  - Risk 2 (`parseFloat("12abc")`): the form uses `<input type="number">`, so ordinary input cannot produce this. Candidate for unsupported.
+  - Risk 7 (data lost on refresh) is the documented design ("React state only"), not a defect.
+  - Risk 8 (no delete confirmation) is a UX preference, not a defect; category "maintainability" is a mismatch.
+- **Useful suggestions:** risks 1 (silent rejection), 3 (`Infinity` passes validation), 4 (unknown customer type gets 0%) and 6 (untested functions) point at real code behaviour.
+- **Verification (to be filled with real output):**
+  - [ ] Browser: empty description -> result: <...>
+  - [ ] Browser: `<script>alert(1)</script>` as description -> result: <...>
+  - [ ] `validateExpense('x', Infinity)` -> result: <...>
+  - [ ] `discountRate('vip')` -> result: <...>
+  - [ ] rounding check -> result: <...>
+  - [ ] `grep randomUUID src/App.tsx` -> result: <...>
+
+### Appendix A: Copilot raw output
+
+Paste here, unedited, the final answer of Copilot (from "No files or repository state were changed..." to the end of risk 11) inside a code block. The 15 intermediate "Read ... Completed with input" lines can be left out: they are listed under "Context received".
