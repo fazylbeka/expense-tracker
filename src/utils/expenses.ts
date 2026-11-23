@@ -24,7 +24,7 @@ export function discountRate(customerType: CustomerType): number {
 
 export function applyDiscount(amount: number, customerType: CustomerType): number {
   const rate = discountRate(customerType)
-  return amount * (1 - rate)
+  return Math.round(amount * (1 - rate) * 100) / 100
 }
 
 export function totalAfterDiscount(expenses: Expense[]): number {

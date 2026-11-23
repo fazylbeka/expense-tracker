@@ -73,3 +73,18 @@ describe('validateExpense', () => {
     expect(validateExpense('Lunch', -5)).not.toBeNull()
   })
 })
+describe('rounding (R5)', () => {
+  it('rounds the discounted amount to cents', () => {
+    expect(applyDiscount(0.02, 'student')).toBe(0.02)
+  })
+  it('total equals the sum of displayed rows', () => {
+    const rows = ['a', 'b', 'c'].map((id) => ({
+      id,
+      description: id,
+      amount: 0.02,
+      category: 'Food' as const,
+      customerType: 'student' as const,
+    }))
+    expect(totalAfterDiscount(rows).toFixed(2)).toBe('0.06')
+  })
+})

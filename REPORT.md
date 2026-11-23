@@ -112,10 +112,37 @@ Disclosure: AGENTS.md is not loaded automatically by the chat assistant; its tex
 Acceptance criteria 1-4 still hold (tests, lint and build pass).
 
 ## Task 4. Read-only risk review
-TODO
+Tool: GitHub Copilot Chat (Ask mode), model <MODEL>. Raw output: AI_LOG.md, Entry 3. Copilot changed no files (`git status` showed only my own edit of AI_LOG.md).
 
-## Task 5. Risk register
-TODO
+| Copilot # | Candidate | Result |
+|---|---|---|
+| 1 | Silent rejection of invalid input | Confirmed (ExpenseForm.tsx submit() returns without message; browser: pending) |
+| 3 | Infinity/huge amounts accepted | Confirmed at function level (`validateExpense('x', Infinity)` -> null); UI reachability unverified |
+| 4 | Unknown customer type gets 0% | Confirmed at function level (`discountRate('vip')` -> 0); not reachable through the select |
+| 5 | Floating-point rounding | pending (UI uses toFixed(2); row-vs-total mismatch check) |
+| 6 | Untested functions | Confirmed (totalBeforeDiscount, totalByCategoryAfterDiscount not in `npm test`) |
+| 10 | Dev dependency vulnerabilities | Confirmed (`npm audit`: 6; `--omit=dev`: 0) |
+| 11 | AGENTS.md not auto-loaded | Plausible/weak: Copilot opened AGENTS.md itself |
+| 9 | crypto.randomUUID | Plausible, low (App.tsx:11; localhost is a secure context) |
+| 2 | parseFloat("12abc") | Unsupported (input type="number") |
+| 7 | Data lost on refresh | Unsupported as risk (documented design: React state only) |
+| 8 | No delete confirmation | Unsupported as defect (UX preference) |
+| mine | XSS via description | pending (grep dangerouslySetInnerHTML; browser test) |
+| mine | Build artifacts and .bolt tracked in git | Confirmed (`git ls-files`) |
+
+## Task 5. Risk register (draft)
+
+| ID | Cat. | Cause -> Event -> Consequence | Component | Evidence | Status | L | I | Score |
+|---|---|---|---|---|---|---|---|---|
+| R1 | correctness | submit() returns silently -> user enters invalid data -> nothing happens, no feedback | ExpenseForm.tsx | code; browser pending | Confirmed | 3 | 2 | 6 |
+| R2 | correctness | validateExpense accepts Infinity/huge values -> user enters 1e308 twice -> total shows Infinity | expenses.ts | test output `null` | Confirmed (function) | 1 | 2 | 2 |
+| R3 | correctness | discountRate: unknown type -> 0% -> wrong total if a new type is added without updating it | expenses.ts | test output `0` | Confirmed (function) | 1 | 2 | 2 |
+| R4 | maintainability | 2 of 6 total functions untested -> refactor changes totals -> summary silently wrong | expenses.test.ts | `npm test` list | Confirmed | 2 | 2 | 4 |
+| R5 | correctness | rows rounded separately, totals not -> displayed rows differ from total by 0.01 | Table/Summary | pending | pending | 2 | 2 | 4 |
+| R6 | dependency | vitest/vite/esbuild/tinypool vulnerable -> dev server or test run exploited -> developer machine exposed | package.json | `npm audit` | Confirmed (dev-only) | 2 | 2 | 4 |
+| R7 | agent ops | tsbuildinfo and .bolt tracked -> every build dirties the tree -> noisy diffs, hard review | .gitignore | `git ls-files` | Confirmed | 3 | 1 | 3 |
+| R8 | dependency | ^ ranges, no CI -> unchecked updates/regressions | package.json | `ls -a`, no .github | Confirmed (lockfile mitigates) | 2 | 1 | 2 |
+| R9 | compat | crypto.randomUUID unavailable -> add fails | App.tsx:11 | grep | Plausible | 1 | 2 | 2 |
 
 ## Task 6. Agent-readiness audit
 TODO
